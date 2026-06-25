@@ -71,17 +71,6 @@ export default function LandingPage({ onStart }: Props) {
         <div className="absolute bottom-0 -right-20 w-80 h-80 bg-brand-dark/5 rounded-full blur-3xl" />
 
         <div className="relative max-w-2xl mx-auto text-center">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-            className="mx-auto mb-5 w-20 h-20 rounded-2xl bg-gradient-to-br from-brand to-brand-dark p-0.5 shadow-xl shadow-brand/20"
-          >
-            <div className="w-full h-full rounded-[calc(0.75rem-1px)] bg-white flex items-center justify-center overflow-hidden">
-              <img src="/logo.jpg" alt="" className="w-full h-full object-cover" />
-            </div>
-          </motion.div>
-
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
