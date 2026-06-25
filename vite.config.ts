@@ -9,7 +9,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons/*.svg', 'icons/*.png'],
+      includeAssets: ['favicon.svg', 'logo.jpg', 'icons/*.svg', 'icons/*.png'],
       manifest: {
         name: 'Shine Hygiene Solutions — Instant Quote Engine',
         short_name: 'Shine Hygiene',

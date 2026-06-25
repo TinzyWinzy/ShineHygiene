@@ -76,11 +76,14 @@ export default function App() {
       <OfflineBanner queue={queue} flushing={flushing} />
 
       <header className="bg-white/70 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-3xl mx-auto px-4 py-4 text-center">
-          <h1 className="text-xl font-bold text-brand-dark tracking-tight">
-            Shine Hygiene Solutions
-          </h1>
-          <p className="text-xs text-gray-500 mt-0.5">Instant Quote Engine</p>
+        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-center gap-3">
+          <img src="/logo.jpg" alt="Shine Hygiene Solutions" className="h-10 w-auto rounded" />
+          <div className="text-left">
+            <h1 className="text-lg font-bold text-brand-dark tracking-tight leading-tight">
+              Shine Hygiene Solutions
+            </h1>
+            <p className="text-xs text-gray-500">Instant Quote Engine</p>
+          </div>
         </div>
       </header>
 
