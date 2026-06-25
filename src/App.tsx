@@ -5,9 +5,10 @@ import { useQuoteEngine } from './hooks/useQuoteEngine'
 import { useOfflineQueue } from './hooks/useOfflineQueue'
 import { buildWhatsAppUrl } from './utils/wa'
 import { printQuoteAsPdf } from './utils/pdf'
+import AnnouncementBar from './components/AnnouncementBar'
+import Navbar from './components/Navbar'
 import LandingPage from './components/LandingPage'
 import VerticalNav from './components/VerticalNav'
-import OfflineBanner from './components/OfflineBanner'
 import QuoteSummary from './components/QuoteSummary'
 import BookingForm from './components/BookingForm'
 import ShimmerQuote from './components/ShimmerQuote'
@@ -39,7 +40,7 @@ export default function App() {
   const [showLanding, setShowLanding] = useState(true)
   const [vertical, setVertical] = useState<Vertical>('commercial')
   const { params, updateParams, quote, reset } = useQuoteEngine(vertical)
-  const { queue, enqueue, flushing } = useOfflineQueue()
+  const { queue, enqueue } = useOfflineQueue()
   const [submitted, setSubmitted] = useState<LeadData | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [changing, setChanging] = useState(false)
@@ -90,18 +91,10 @@ export default function App() {
     reset()
   }, [reset])
 
-  {showLanding && (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className="min-h-dvh bg-gradient-to-b from-gray-50 via-white to-gray-50"
-    >
-      <OfflineBanner queue={queue} flushing={flushing} />
-      <LandingPage onStart={handleStart} />
-      <Footer />
-    </motion.div>
-  )}
+  const goHome = useCallback(() => {
+    setShowLanding(true)
+    setSubmitted(null)
+  }, [])
 
   return (
     <AnimatePresence mode="wait">
@@ -111,10 +104,11 @@ export default function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
           className="min-h-dvh bg-gradient-to-b from-gray-50 via-white to-gray-50 flex flex-col"
         >
-          <OfflineBanner queue={queue} flushing={flushing} />
+          <AnnouncementBar />
+          <Navbar onStart={() => handleStart()} />
           <LandingPage onStart={handleStart} />
           <Footer />
         </motion.div>
@@ -124,7 +118,7 @@ export default function App() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+          transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
           className="min-h-dvh bg-gradient-to-b from-gray-50 via-white to-gray-50 flex flex-col relative"
         >
           <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
@@ -132,41 +126,8 @@ export default function App() {
             <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-brand-dark/5 rounded-full blur-3xl" />
           </div>
 
-          <OfflineBanner queue={queue} flushing={flushing} />
-
-          <motion.header
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-            className="bg-white/60 backdrop-blur-xl border-b border-gray-100/80 sticky top-0 z-20"
-          >
-            <div className="max-w-3xl mx-auto px-4 py-2.5 flex items-center gap-3">
-              <motion.button
-                onClick={() => { setShowLanding(true); setSubmitted(null) }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-9 h-9 rounded-lg bg-gradient-to-br from-brand to-brand-dark p-0.5 shrink-0 shadow-md shadow-brand/20"
-              >
-                <div className="w-full h-full rounded-[5px] bg-white flex items-center justify-center overflow-hidden">
-                  <img src="/logo.jpg" alt="Shine Hygiene" className="w-full h-full object-cover" />
-                </div>
-              </motion.button>
-              <div className="flex-1 min-w-0">
-                <h1 className="text-base font-bold text-brand-dark tracking-tight leading-tight truncate">
-                  Shine Hygiene Solutions
-                </h1>
-                <p className="text-[11px] text-gray-400 truncate">Instant Quote Engine</p>
-              </div>
-              <motion.button
-                onClick={() => { setShowLanding(true); setSubmitted(null) }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="text-xs text-gray-400 hover:text-brand transition-colors shrink-0 hidden sm:block"
-              >
-                Back to home
-              </motion.button>
-            </div>
-          </motion.header>
+          <AnnouncementBar />
+          <Navbar onStart={goHome} />
 
           <VerticalNav active={vertical} onChange={handleVerticalChange} />
 
@@ -262,7 +223,6 @@ export default function App() {
                   transition={{ duration: 0.2 }}
                   className="space-y-5"
                 >
-                  {/* Quote engine header */}
                   <div className="text-center py-2">
                     <p className="text-xs text-gray-400 uppercase tracking-widest font-medium">
                       {VERTICAL_ICONS[vertical]} {VERTICAL_LABELS[vertical]}
