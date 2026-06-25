@@ -16,6 +16,7 @@
 
   body {
     @apply antialiased text-brand-subtext bg-brand-bg;
+    font-feature-settings: "tnum" on, "cv05" on;
   }
 
   input[type="range"] {
@@ -23,36 +24,63 @@
     appearance: none;
     height: 6px;
     border-radius: 4px;
-    background: #d1d5db;
+    background: #e5e7eb;
     outline: none;
+    transition: background 0.2s;
   }
 
   input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: var(--color-brand);
     cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(17, 139, 206, 0.3);
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover {
+    box-shadow: 0 2px 12px rgba(17, 139, 206, 0.45);
+    transform: scale(1.1);
   }
 
   input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: var(--color-brand);
     cursor: pointer;
-    border: 2px solid white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(17, 139, 206, 0.3);
+  }
+
+  input[type="date"],
+  input[type="time"],
+  input[type="text"],
+  input[type="tel"] {
+    font-family: inherit;
+  }
+
+  ::selection {
+    background: var(--color-brand);
+    color: white;
+  }
+
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
 }
 
 @layer utilities {
   .animate-in {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn 0.35s ease-out;
   }
 }
 

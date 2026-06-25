@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { motion } from 'motion/react'
 import type { HygieneMartQuoteParams } from '../../types'
 import { HYGIENE_MART_CATALOG } from '../../types'
 
@@ -33,55 +34,79 @@ export default function HygieneMartQuote({ params, onChange }: Props) {
   const qualifiesForDiscount = totalQty >= 10
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-800">HygieneMart — Wholesale Catalog</h2>
-      <p className="text-sm text-gray-500">Browse our proprietary line of detergents, dispensers, and equipment.</p>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-5"
+    >
+      <div>
+        <h2 className="text-lg font-semibold text-gray-800">HygieneMart</h2>
+        <p className="text-sm text-gray-400 mt-0.5">Wholesale cleaning supplies and equipment.</p>
+      </div>
 
-      {totalQty > 0 && (
-        <div className={`px-4 py-2 rounded-lg text-sm font-medium ${qualifiesForDiscount ? 'bg-brand-light text-brand-dark' : 'bg-gray-100 text-gray-600'}`}>
-          {totalQty} unit(s) selected &middot;
-          {qualifiesForDiscount
-            ? ' 5% bulk discount applied!'
-            : ` ${10 - totalQty} more unit(s) for 5% bulk discount`}
-        </div>
-      )}
+      <motion.div
+        initial={{ opacity: 0, height: 0 }}
+        animate={totalQty > 0 ? { opacity: 1, height: 'auto' } : { opacity: 0, height: 0 }}
+        className={`overflow-hidden px-4 py-2.5 rounded-xl text-sm font-medium ${
+          qualifiesForDiscount ? 'bg-gradient-to-r from-brand-light to-blue-50 text-brand-dark border border-brand/20' : 'bg-gray-100 text-gray-600'
+        }`}
+      >
+        {qualifiesForDiscount
+          ? `5% bulk discount applied — ${totalQty} units selected`
+          : `${totalQty} unit(s) selected · ${10 - totalQty} more for 5% bulk discount`
+        }
+      </motion.div>
 
-      {categories.map(cat => (
+      {categories.map((cat, ci) => (
         <div key={cat}>
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">{cat}</h3>
+          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2.5">{cat}</h3>
           <div className="space-y-2">
-            {HYGIENE_MART_CATALOG.filter(i => i.category === cat).map(item => {
+            {HYGIENE_MART_CATALOG.filter(i => i.category === cat).map((item, ii) => {
               const qty = cartMap.get(item.id) ?? 0
               return (
-                <div
+                <motion.div
                   key={item.id}
-                  className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.25, delay: ci * 0.05 + ii * 0.03 }}
+                  whileHover={{ y: -1 }}
+                  className="flex items-center justify-between p-3.5 rounded-xl border border-gray-200 bg-white hover:border-brand/30 hover:shadow-sm transition-all"
                 >
                   <div className="flex-1 min-w-0">
                     <span className="block text-sm font-medium text-gray-800 truncate">{item.name}</span>
                     <span className="text-xs text-gray-400">${item.unitPrice.toFixed(2)} / {item.unit}</span>
                   </div>
                   <div className="flex items-center gap-2 ml-3">
-                    <button
+                    <motion.button
+                      whileTap={{ scale: 0.9 }}
                       onClick={() => updateItem(item.id, Math.max(0, qty - 1))}
                       className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors text-lg leading-none"
                     >
-                      -
-                    </button>
-                    <span className="w-8 text-center font-semibold text-sm">{qty}</span>
-                    <button
+                      &minus;
+                    </motion.button>
+                    <motion.span
+                      key={qty}
+                      initial={{ scale: 1.3 }}
+                      animate={{ scale: 1 }}
+                      className="w-8 text-center font-semibold text-sm tabular-nums"
+                    >
+                      {qty}
+                    </motion.span>
+                    <motion.button
+                      whileTap={{ scale: 0.9 }}
                       onClick={() => updateItem(item.id, qty + 1)}
-                      className="w-8 h-8 rounded-full border border-brand/40 flex items-center justify-center text-brand hover:bg-brand-light transition-colors text-lg leading-none"
+                      className="w-8 h-8 rounded-full border border-brand/30 flex items-center justify-center text-brand hover:bg-brand-light transition-colors text-lg leading-none"
                     >
                       +
-                    </button>
+                    </motion.button>
                   </div>
-                </div>
+                </motion.div>
               )
             })}
           </div>
         </div>
       ))}
-    </div>
+    </motion.div>
   )
 }

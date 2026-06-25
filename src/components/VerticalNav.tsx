@@ -1,3 +1,4 @@
+import { motion } from 'motion/react'
 import type { Vertical } from '../types'
 
 interface Props {
@@ -15,21 +16,31 @@ const TABS: { key: Vertical; label: string; icon: string }[] = [
 
 export default function VerticalNav({ active, onChange }: Props) {
   return (
-    <nav className="flex overflow-x-auto gap-1 bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-10">
+    <motion.nav
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.3 }}
+      className="flex overflow-x-auto gap-1 bg-white/80 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-10 scrollbar-none"
+    >
       {TABS.map(tab => (
         <button
           key={tab.key}
           onClick={() => onChange(tab.key)}
-          className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap transition-all border-b-2 ${
-            active === tab.key
-              ? 'border-brand text-brand-dark bg-brand-light'
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-          }`}
+          className="relative flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors"
         >
-          <span className="text-base">{tab.icon}</span>
-          {tab.label}
+          {active === tab.key && (
+            <motion.span
+              layoutId="activeTab"
+              className="absolute inset-0 bg-brand-light rounded-t-lg"
+              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            />
+          )}
+          <span className="relative z-10 text-base">{tab.icon}</span>
+          <span className={`relative z-10 ${active === tab.key ? 'text-brand-dark font-semibold' : 'text-gray-500'}`}>
+            {tab.label}
+          </span>
         </button>
       ))}
-    </nav>
+    </motion.nav>
   )
 }
