@@ -12,6 +12,7 @@ import VerticalNav from './components/VerticalNav'
 import QuoteSummary from './components/QuoteSummary'
 import BookingForm from './components/BookingForm'
 import ShimmerQuote from './components/ShimmerQuote'
+import OfflineBanner from './components/OfflineBanner'
 import Footer from './components/Footer'
 
 const LazyCommercial = lazy(() => import('./components/quotes/CommercialQuote'))
@@ -40,7 +41,7 @@ export default function App() {
   const [showLanding, setShowLanding] = useState(true)
   const [vertical, setVertical] = useState<Vertical>('commercial')
   const { params, updateParams, quote, reset } = useQuoteEngine(vertical)
-  const { queue, enqueue } = useOfflineQueue()
+  const { queue, enqueue, flushing } = useOfflineQueue()
   const [submitted, setSubmitted] = useState<LeadData | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [changing, setChanging] = useState(false)
@@ -108,6 +109,7 @@ export default function App() {
           className="min-h-dvh bg-gradient-to-b from-gray-50 via-white to-gray-50 flex flex-col"
         >
           <AnnouncementBar />
+          <OfflineBanner queue={queue} flushing={flushing} />
           <Navbar onStart={() => handleStart()} />
           <LandingPage onStart={handleStart} />
           <Footer />
@@ -127,6 +129,7 @@ export default function App() {
           </div>
 
           <AnnouncementBar />
+          <OfflineBanner queue={queue} flushing={flushing} />
           <Navbar onStart={goHome} />
 
           <VerticalNav active={vertical} onChange={handleVerticalChange} />
@@ -199,7 +202,7 @@ export default function App() {
 
                   <p className="text-xs text-gray-400 text-center">
                     A confirmation will also be sent to{' '}
-                    <a href="mailto:sales@shineclean.co.zw" className="text-brand hover:text-brand-dark underline underline-offset-2 transition-colors">sales@shineclean.co.zw</a>
+                    <a href="mailto:shinecleanzw@gmail.com" className="text-brand hover:text-brand-dark underline underline-offset-2 transition-colors">shinecleanzw@gmail.com</a>
                   </p>
 
                   <div className="text-center pt-1">

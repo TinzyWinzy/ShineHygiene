@@ -33,11 +33,17 @@ export default function Navbar({ onStart }: Props) {
     setMenuOpen(false)
     if (action === 'home' || action === 'services') {
       onStart()
-    } else if (action === 'about') {
-      const el = document.getElementById('why-us')
-      el?.scrollIntoView({ behavior: 'smooth' })
-    } else if (action === 'contact') {
-      window.location.href = 'mailto:sales@shineclean.co.zw'
+    } else {
+      const id = action === 'about' ? 'about' : 'contact'
+      const el = document.getElementById(id)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' })
+      } else {
+        onStart()
+        requestAnimationFrame(() => {
+          document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
+        })
+      }
     }
   }
 
@@ -86,14 +92,14 @@ export default function Navbar({ onStart }: Props) {
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-1.5">
           <a
-            href="tel:+263777000000"
+            href="tel:+263771962330"
             className="flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-medium text-gray-500 hover:text-brand-dark rounded-lg hover:bg-gray-50 transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
             Call
           </a>
           <a
-            href="https://wa.me/263777000000"
+            href="https://wa.me/263771962330"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-4 py-2 bg-[#25D366] text-white text-[13px] font-semibold rounded-xl hover:bg-[#20bd5a] transition-all shadow-sm hover:shadow-md hover:shadow-[#25D366]/20"
@@ -114,7 +120,7 @@ export default function Navbar({ onStart }: Props) {
         {/* Mobile hamburger */}
         <div className="flex items-center gap-1.5 md:hidden">
           <a
-            href="tel:+263777000000"
+            href="tel:+263771962330"
             className="flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 text-gray-500 hover:text-brand hover:border-brand/30 transition-colors"
             aria-label="Call us"
           >
@@ -165,7 +171,7 @@ export default function Navbar({ onStart }: Props) {
               ))}
               <hr className="my-2 border-gray-100" />
               <a
-                href="https://wa.me/263777000000"
+                href="https://wa.me/263771962330"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-[#25D366] text-white min-h-[44px]"
@@ -174,7 +180,7 @@ export default function Navbar({ onStart }: Props) {
                 Chat on WhatsApp
               </a>
               <a
-                href="tel:+263777000000"
+                href="tel:+263771962330"
                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 border border-gray-200 min-h-[44px]"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>

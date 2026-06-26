@@ -4,8 +4,9 @@
   --color-brand: #118bce;
   --color-brand-dark: #033f77;
   --color-brand-light: #e0f0ff;
-  --color-brand-bg: #ffffff;
-  --color-brand-subtext: #000000;
+  --color-brand-bg: #fafbfc;
+  --color-brand-subtext: #1f2937;
+  --color-brand-muted: #6b7280;
   --breakpoint-xs: 420px;
 }
 
@@ -13,6 +14,7 @@
   html {
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
+    font-size: clamp(15.5px, 14.5px + 0.3vw, 17.5px);
   }
 
   body {
@@ -61,7 +63,9 @@
   input[type="date"],
   input[type="time"],
   input[type="text"],
-  input[type="tel"] {
+  input[type="tel"],
+  input[type="email"],
+  textarea {
     font-family: inherit;
   }
 
@@ -83,6 +87,18 @@
   .animate-in {
     animation: fadeIn 0.35s ease-out;
   }
+
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg shadow-gray-200/30;
+  }
+
+  .glass-strong {
+    @apply bg-white/85 backdrop-blur-2xl border border-gray-200/60 shadow-xl shadow-gray-200/40;
+  }
+
+  .glass-frost {
+    @apply bg-white/40 backdrop-blur-md border border-white/30 shadow-md;
+  }
 }
 
 @keyframes fadeIn {
@@ -95,6 +111,15 @@
   100% { transform: translateX(100%); }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
 .animate-shimmer {
   animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }

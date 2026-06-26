@@ -1,6 +1,7 @@
 import type { LeadData } from '../types'
+import { HYGIENE_MART_CATALOG } from '../types'
 
-const SHINE_PHONE = '263777000000'
+const SHINE_PHONE = '263771962330'
 
 function formatLeadParams(data: LeadData): string {
   switch (data.vertical) {
@@ -19,7 +20,17 @@ function formatLeadParams(data: LeadData): string {
     }
     case 'hygienemart': {
       const p = data.params as { items: { itemId: string; quantity: number }[] }
-      return `Items: ${p.items.reduce((s, i) => s + i.quantity, 0)} units`
+      const lines = p.items.map(i => {
+        const cat = HYGIENE_MART_CATALOG.find(c => c.id === i.itemId)
+        const name = cat ? cat.name : i.itemId
+        const unitPrice = cat ? cat.unitPrice : 0
+        return `  • ${name} × ${i.quantity} @ $${unitPrice.toFixed(2)} = $${(unitPrice * i.quantity).toFixed(2)}`
+      })
+      const total = p.items.reduce((s, i) => {
+        const cat = HYGIENE_MART_CATALOG.find(c => c.id === i.itemId)
+        return s + (cat ? cat.unitPrice * i.quantity : 0)
+      }, 0)
+      return `Items (${p.items.reduce((s, i) => s + i.quantity, 0)} units):\n${lines.join('\n')}\nOrder Total: $${total.toFixed(2)}`
     }
   }
 }

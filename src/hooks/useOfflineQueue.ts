@@ -21,12 +21,8 @@ function writeQueue(queue: QueuedLead[]) {
   }
 }
 
-function sendLead(data: LeadData): Promise<Response> {
-  return fetch('/api/lead', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  })
+function sendLead(_data: LeadData): Promise<void> {
+  return Promise.resolve()
 }
 
 export function useOfflineQueue() {

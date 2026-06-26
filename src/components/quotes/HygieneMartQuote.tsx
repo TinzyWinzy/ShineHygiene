@@ -76,6 +76,11 @@ export default function HygieneMartQuote({ params, onChange }: Props) {
                   <div className="flex-1 min-w-0">
                     <span className="block text-sm font-medium text-gray-800 truncate">{item.name}</span>
                     <span className="text-xs text-gray-400">${item.unitPrice.toFixed(2)} / {item.unit}</span>
+                    {qty > 0 && (
+                      <span className="text-xs font-medium text-brand-dark tabular-nums block mt-0.5">
+                        = ${(item.unitPrice * qty).toFixed(2)}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-2 ml-3">
                     <motion.button

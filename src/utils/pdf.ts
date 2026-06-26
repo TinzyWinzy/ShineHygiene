@@ -1,4 +1,5 @@
 import type { LeadData } from '../types'
+import { HYGIENE_MART_CATALOG } from '../types'
 
 export function printQuoteAsPdf(data: LeadData): void {
   const win = window.open('', '_blank')
@@ -32,7 +33,12 @@ function formatParams(data: LeadData): string[] {
     }
     case 'hygienemart': {
       const p = data.params as { items: { itemId: string; quantity: number }[] }
-      return [`Total Items: ${p.items.reduce((s, i) => s + i.quantity, 0)} units`]
+      const lines = p.items.map(i => {
+        const cat = HYGIENE_MART_CATALOG.find(c => c.id === i.itemId)
+        const name = cat ? cat.name : i.itemId
+        return `${name} × ${i.quantity}`
+      })
+      return lines.length ? lines : ['No items selected']
     }
   }
 }
