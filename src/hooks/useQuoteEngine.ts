@@ -71,6 +71,12 @@ function getDefaultParams(vertical: Vertical): QuoteParams {
     case 'car':
       return { carSize: 'sedan' as CarSize }
     case 'hygienemart':
-      return { items: [] as HygieneMartCartItem[] }
+      return {
+        items: [
+          { itemId: 'det-5l', quantity: 2 },
+          { itemId: 'san-5l', quantity: 1 },
+          { itemId: 'glove-box', quantity: 1 },
+        ] as HygieneMartCartItem[],
+      }
   }
 }
