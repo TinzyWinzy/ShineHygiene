@@ -89,16 +89,18 @@ export type LeadData =
   | (LeadBase & { vertical: 'hygienemart'; params: HygieneMartQuoteParams })
 
 /**
- * A lead saved on this device. Nothing is sent until the API confirms it,
- * or until the customer intentionally hands it to WhatsApp.
+ * A lead saved on this device. `submitted` means the office API confirmed it;
+ * `handed_off` means the customer opened WhatsApp for it.
  */
-export type DraftStatus = 'pending' | 'handed_off'
+export type DraftStatus = 'pending' | 'submitted' | 'handed_off'
 
 export interface LeadDraft {
   id: string
   data: LeadData
   savedAt: string
   status: DraftStatus
+  serverReference?: string
+  submittedAt?: string
   handedOffAt?: string
 }
 

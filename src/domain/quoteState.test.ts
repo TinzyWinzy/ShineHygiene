@@ -119,6 +119,21 @@ describe('reviveLeadDraft', () => {
     expect(draft?.handedOffAt).toBe('2026-02-01T09:05:00.000Z')
   })
 
+  it('keeps the office reference on a submitted draft', () => {
+    const draft = reviveLeadDraft({
+      id: lead.id,
+      data: lead,
+      savedAt: '2026-02-01T09:00:00.000Z',
+      status: 'submitted',
+      serverReference: 'SH-20260201-ABCD1234',
+      submittedAt: '2026-02-01T09:01:00.000Z',
+    })
+
+    expect(draft?.status).toBe('submitted')
+    expect(draft?.serverReference).toBe('SH-20260201-ABCD1234')
+    expect(draft?.submittedAt).toBe('2026-02-01T09:01:00.000Z')
+  })
+
   it('rejects a corrupt draft instead of rendering it', () => {
     const corrupt = {
       ...lead,

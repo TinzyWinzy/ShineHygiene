@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { LeadData, LeadDraft } from '../types'
 import { reviveLeadDraft } from '../domain/quoteState'
-import { newId } from '../utils/id'
 
 const STORAGE_KEY = 'shine_lead_drafts'
 const LEGACY_KEY = 'shine_offline_queue'
@@ -39,9 +38,9 @@ function persist(drafts: LeadDraft[]): boolean {
 }
 
 /**
- * Local draft store. There is deliberately no automatic "sync":
- * a draft is either on this device or explicitly handed to WhatsApp.
- * Nothing is deleted until the customer or the eventual API confirms it.
+ * Local draft store. A draft is saved before any network call, marked
+ * submitted only after the API confirms it, and handed off only when the
+ * customer opens WhatsApp. Nothing is deleted automatically.
  */
 export function useLeadDrafts() {
   const [drafts, setDrafts] = useState<LeadDraft[]>(readDrafts)
@@ -53,19 +52,37 @@ export function useLeadDrafts() {
 
   const saveDraft = useCallback((data: LeadData) => {
     const draft: LeadDraft = {
-      id: newId(),
+      id: data.id,
       data,
       savedAt: new Date().toISOString(),
       status: 'pending',
     }
-    setDrafts(prev => [draft, ...prev])
+    setDrafts(prev => {
+      const withoutExisting = prev.filter(existing => existing.id !== draft.id)
+      return [draft, ...withoutExisting]
+    })
     return draft
+  }, [])
+
+  const markSubmitted = useCallback((id: string, reference: string) => {
+    setDrafts(prev =>
+      prev.map(draft =>
+        draft.id === id
+          ? {
+              ...draft,
+              status: 'submitted',
+              serverReference: reference,
+              submittedAt: new Date().toISOString(),
+            }
+          : draft,
+      ),
+    )
   }, [])
 
   const markHandedOff = useCallback((id: string) => {
     setDrafts(prev =>
       prev.map(draft =>
-        draft.id === id && draft.status === 'pending'
+        draft.id === id && draft.status !== 'handed_off'
           ? { ...draft, status: 'handed_off', handedOffAt: new Date().toISOString() }
           : draft,
       ),
@@ -80,5 +97,5 @@ export function useLeadDrafts() {
     setDrafts(prev => prev.filter(draft => draft.status !== 'handed_off'))
   }, [])
 
-  return { drafts, saveDraft, markHandedOff, removeDraft, clearHandedOff, storageError }
+  return { drafts, saveDraft, markSubmitted, markHandedOff, removeDraft, clearHandedOff, storageError }
 }

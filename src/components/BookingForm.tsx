@@ -136,7 +136,12 @@ export default function BookingForm({ onSubmit, disabled }: Props) {
             ) : 'Get My Quote'}
           </motion.button>
           <p className="text-[11px] text-gray-500 text-center mt-2">
-            Your name and phone number are saved on this device and only shared when you send the quote.
+            By requesting a quote you agree that Shine Hygiene may store these details to prepare and follow up
+            on your request. We do not sell your data. Email{' '}
+            <a href="mailto:shinecleanzw@gmail.com" className="underline underline-offset-2 text-brand-ink">
+              shinecleanzw@gmail.com
+            </a>{' '}
+            to ask for a copy or deletion.
           </p>
         </motion.div>
       </form>

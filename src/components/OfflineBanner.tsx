@@ -9,7 +9,8 @@ interface Props {
 export default function OfflineBanner({ drafts }: Props) {
   const isOnline = useOnlineStatus()
   const pending = drafts.filter(d => d.status === 'pending').length
-  const handedOff = drafts.length - pending
+  const submitted = drafts.filter(d => d.status === 'submitted').length
+  const handedOff = drafts.filter(d => d.status === 'handed_off').length
 
   if (isOnline && drafts.length === 0) return null
 
@@ -19,10 +20,15 @@ export default function OfflineBanner({ drafts }: Props) {
       drafts.length > 0
         ? `Offline — ${drafts.length} saved quote${drafts.length === 1 ? '' : 's'} on this device`
         : 'Offline — quotes are saved on this device'
-  } else if (pending > 0) {
-    message = `${pending} saved quote${pending === 1 ? '' : 's'} on this device — not sent yet`
   } else {
-    message = `${handedOff} quote${handedOff === 1 ? '' : 's'} handed to WhatsApp`
+    const parts: string[] = []
+    if (pending > 0) parts.push(`${pending} saved quote${pending === 1 ? '' : 's'} on this device — not sent yet`)
+    if (submitted > 0)
+      parts.push(
+        `${submitted} quote request${submitted === 1 ? '' : 's'} received by our office`,
+      )
+    if (handedOff > 0) parts.push(`${handedOff} handed to WhatsApp`)
+    message = parts.join(' · ')
   }
 
   return (

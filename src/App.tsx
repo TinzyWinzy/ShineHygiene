@@ -8,6 +8,7 @@ import { createLead } from './domain/quoteState'
 import { newId } from './utils/id'
 import { buildWhatsAppUrl } from './utils/wa'
 import { printQuoteAsPdf } from './utils/pdf'
+import { submitLead, LeadApiError } from './utils/api'
 import AnnouncementBar from './components/AnnouncementBar'
 import Navbar from './components/Navbar'
 import LandingPage from './components/LandingPage'
@@ -38,18 +39,35 @@ const VERTICAL_ICONS: Record<Vertical, string> = {
   hygienemart: '🧴',
 }
 
+interface SubmissionState {
+  lead: ReturnType<typeof createLead>
+  reference?: string
+  error?: string
+}
+
 export default function App() {
   const [showLanding, setShowLanding] = useState(true)
-  const [submitted, setSubmitted] = useState<ReturnType<typeof createLead> | null>(null)
+  const [submitted, setSubmitted] = useState<SubmissionState | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
   const { state, dispatch, setVertical, reset, quote } = useQuoteEngine()
-  const { drafts, saveDraft, markHandedOff, removeDraft, clearHandedOff, storageError } = useLeadDrafts()
+  const { drafts, saveDraft, markSubmitted, markHandedOff, removeDraft, clearHandedOff, storageError } = useLeadDrafts()
   const isOnline = useOnlineStatus()
 
   const vertical = state.vertical
   const pendingDrafts = drafts.filter(d => d.status === 'pending').length
-  const handedOffDrafts = drafts.length - pendingDrafts
+  const submittedDrafts = drafts.filter(d => d.status === 'submitted').length
+  const handedOffDrafts = drafts.filter(d => d.status === 'handed_off').length
+  const draftSummary = [
+    pendingDrafts > 0
+      ? `${pendingDrafts} saved quote${pendingDrafts === 1 ? '' : 's'} on this device — not sent yet`
+      : '',
+    submittedDrafts > 0
+      ? `${submittedDrafts} quote request${submittedDrafts === 1 ? '' : 's'} received by our office`
+      : '',
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   const handleStart = useCallback((v?: Vertical) => {
     setShowLanding(false)
@@ -75,12 +93,49 @@ export default function App() {
         quote,
       )
 
+      // Keep a local copy before the network call, so a timeout can never lose the lead.
       saveDraft(lead)
-      setSubmitted(lead)
-      setSubmitting(false)
+
+      if (!isOnline) {
+        setSubmitted({ lead })
+        setSubmitting(false)
+        return
+      }
+
+      try {
+        const receipt = await submitLead(lead)
+        markSubmitted(lead.id, receipt.reference)
+        setSubmitted({ lead, reference: receipt.reference })
+      } catch (error) {
+        const message =
+          error instanceof LeadApiError
+            ? error.message
+            : 'Our office could not save your request. Your quote is still saved on this device.'
+        setSubmitted({ lead, error: message })
+      } finally {
+        setSubmitting(false)
+      }
     },
-    [state, quote, saveDraft, submitting],
+    [state, quote, saveDraft, markSubmitted, submitting, isOnline],
   )
+
+  const retrySubmit = useCallback(async () => {
+    if (!submitted || submitting) return
+    setSubmitting(true)
+    try {
+      const receipt = await submitLead(submitted.lead)
+      markSubmitted(submitted.lead.id, receipt.reference)
+      setSubmitted({ lead: submitted.lead, reference: receipt.reference })
+    } catch (error) {
+      const message =
+        error instanceof LeadApiError
+          ? error.message
+          : 'Our office could not save your request. Your quote is still saved on this device.'
+      setSubmitted(previous => (previous ? { ...previous, error: message } : previous))
+    } finally {
+      setSubmitting(false)
+    }
+  }, [submitted, submitting, markSubmitted])
 
   const handleNewQuote = useCallback(() => {
     setSubmitted(null)
@@ -164,7 +219,7 @@ export default function App() {
                       transition={{ delay: 0.25 }}
                       className="text-xl font-bold text-brand-dark"
                     >
-                      Your quote is ready
+                      {submitted.reference ? 'Quote request received' : 'Your quote is ready'}
                     </motion.h2>
                     <motion.p
                       initial={{ opacity: 0 }}
@@ -172,8 +227,19 @@ export default function App() {
                       transition={{ delay: 0.35 }}
                       className="text-sm text-brand-ink mt-1"
                     >
-                      Nothing has been sent yet. Tap &ldquo;Send via WhatsApp&rdquo; to hand this{' '}
-                      {VERTICAL_LABELS[vertical].toLowerCase()} {VERTICAL_ICONS[vertical]} quote to our team.
+                      {submitted.reference ? (
+                        <>
+                          Your request is saved with reference{' '}
+                          <strong className="font-semibold text-brand-dark">{submitted.reference}</strong>. Tap
+                          &ldquo;Send via WhatsApp&rdquo; to confirm the details with our team.
+                        </>
+                      ) : (
+                        <>
+                          Nothing has been sent yet. Tap &ldquo;Send via WhatsApp&rdquo; to hand this{' '}
+                          {VERTICAL_LABELS[submitted.lead.vertical].toLowerCase()}{' '}
+                          {VERTICAL_ICONS[submitted.lead.vertical]} quote to our team.
+                        </>
+                      )}
                     </motion.p>
                     {!isOnline && (
                       <p className="text-xs text-amber-700 mt-2">
@@ -182,14 +248,30 @@ export default function App() {
                     )}
                   </div>
 
-                  <QuoteSummary quote={submitted.quote} />
+                  {submitted.error && (
+                    <div
+                      role="alert"
+                      className="bg-red-50 border border-red-200 rounded-2xl p-4 text-sm text-red-800"
+                    >
+                      <p>{submitted.error}</p>
+                      <button
+                        onClick={retrySubmit}
+                        disabled={submitting}
+                        className="mt-2 inline-flex items-center gap-1.5 font-semibold text-red-900 underline underline-offset-2 disabled:opacity-50"
+                      >
+                        {submitting ? 'Trying again…' : 'Try again'}
+                      </button>
+                    </div>
+                  )}
+
+                  <QuoteSummary quote={submitted.lead.quote} />
 
                   <div className="flex flex-col sm:flex-row gap-3">
                     <motion.a
-                      href={buildWhatsAppUrl(submitted)}
+                      href={buildWhatsAppUrl(submitted.lead)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onClick={() => markHandedOff(submitted.id)}
+                      onClick={() => markHandedOff(submitted.lead.id)}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="flex-1 flex items-center justify-center gap-2.5 bg-[#25D366] text-[#043b1e] py-3.5 rounded-xl font-semibold text-sm hover:bg-[#20bd5a] transition-all shadow-lg shadow-[#25D366]/20 hover:shadow-xl hover:shadow-[#25D366]/30"
@@ -199,7 +281,7 @@ export default function App() {
                     </motion.a>
 
                     <motion.button
-                      onClick={() => printQuoteAsPdf(submitted)}
+                      onClick={() => printQuoteAsPdf(submitted.lead)}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="flex-1 flex items-center justify-center gap-2 bg-white text-gray-700 py-3.5 rounded-xl font-semibold text-sm border-2 border-gray-200 hover:border-brand/40 hover:text-brand-dark hover:shadow-lg transition-all"
@@ -210,7 +292,9 @@ export default function App() {
                   </div>
 
                   <p className="text-xs text-gray-500 text-center">
-                    This quote is saved as a draft on this device. It is not sent automatically.
+                    {submitted.reference
+                      ? 'Saved to our office. Send it via WhatsApp to confirm scheduling.'
+                      : 'This quote is saved as a draft on this device. It is not sent automatically.'}
                   </p>
 
                   <div className="text-center pt-1 flex items-center justify-center gap-4">
@@ -225,7 +309,7 @@ export default function App() {
                     </motion.button>
                     <button
                       onClick={() => {
-                        removeDraft(submitted.id)
+                        removeDraft(submitted.lead.id)
                         setSubmitted(null)
                       }}
                       className="text-sm text-gray-500 hover:text-red-600 font-medium transition-colors"
@@ -312,10 +396,12 @@ export default function App() {
 
                       {drafts.length > 0 && (
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-xl py-2.5 px-4">
-                          <span className="inline-flex items-center gap-2">
-                            <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            {pendingDrafts} saved quote{pendingDrafts === 1 ? '' : 's'} on this device — not sent yet.
-                          </span>
+                          {draftSummary && (
+                            <span className="inline-flex items-center gap-2">
+                              <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                              {draftSummary}.
+                            </span>
+                          )}
                           {handedOffDrafts > 0 && (
                             <button onClick={clearHandedOff} className="underline underline-offset-2 hover:text-amber-900">
                               Clear {handedOffDrafts} handed-off draft{handedOffDrafts === 1 ? '' : 's'}

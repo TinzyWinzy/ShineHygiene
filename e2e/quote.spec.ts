@@ -27,7 +27,18 @@ test('every vertical renders without a crash and shows a total', async ({ page }
   expect(pageErrors).toEqual([])
 })
 
-test('submission is honest: saved locally, nothing sent, WhatsApp is the handoff', async ({ page }) => {
+test('submission is saved by the office API and WhatsApp is the handoff', async ({ page }) => {
+  let requestBody: Record<string, unknown> | null = null
+
+  await page.route('**/api/leads', async route => {
+    requestBody = route.request().postDataJSON() as Record<string, unknown>
+    await route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify({ reference: 'SH-E2E-1234', totalCents: 12_000, duplicate: false }),
+    })
+  })
+
   await page.goto('/')
   await page.getByRole('button', { name: /calculate your instant quote/i }).click()
   await page.getByRole('button', { name: /residential/i }).click()
@@ -37,19 +48,77 @@ test('submission is honest: saved locally, nothing sent, WhatsApp is the handoff
   await page.getByLabel('Phone Number').fill('0771234567')
   await page.getByRole('button', { name: 'Get My Quote' }).click()
 
-  await expect(page.getByRole('heading', { name: 'Your quote is ready' })).toBeVisible()
-  await expect(page.getByText('Nothing has been sent yet')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Quote request received' })).toBeVisible()
+  await expect(page.getByText('SH-E2E-1234')).toBeVisible()
   await expect(page.getByText(/confirmation.*sent/i)).toHaveCount(0)
+
+  expect(requestBody).toMatchObject({
+    name: 'Rudo Test',
+    phone: '0771234567',
+    vertical: 'residential',
+    params: { rooms: 3, windowDeepClean: false },
+  })
+  expect(requestBody).not.toHaveProperty('quote')
 
   const whatsapp = page.getByRole('link', { name: /send via whatsapp/i })
   await expect(whatsapp).toHaveAttribute('href', /^https:\/\/wa\.me\/263771962330\?text=/)
   await expect(whatsapp).toHaveAttribute('href', /Rudo%20Test/)
 
   await page.reload()
-  await expect(page.getByText(/1 saved quote on this device/)).toBeVisible()
+  await expect(page.getByText(/1 quote request received by our office/)).toBeVisible()
 })
 
-test('offline submission keeps the draft instead of pretending to send it', async ({ page, context }) => {
+test('a failed API call keeps the draft and can be retried idempotently', async ({ page }) => {
+  const requestIds: unknown[] = []
+  let attempts = 0
+
+  await page.route('**/api/leads', async route => {
+    attempts += 1
+    const body = route.request().postDataJSON() as Record<string, unknown>
+    requestIds.push(body.clientRequestId)
+
+    if (attempts === 1) {
+      await route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: JSON.stringify({ error: 'insert_failed' }),
+      })
+      return
+    }
+
+    await route.fulfill({
+      status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify({ reference: 'SH-RETRY-5678', totalCents: 12_000, duplicate: false }),
+    })
+  })
+
+  await page.goto('/')
+  await page.getByRole('button', { name: /calculate your instant quote/i }).click()
+  await page.getByLabel('Full Name').fill('Retry User')
+  await page.getByLabel('Phone Number').fill('0779999999')
+  await page.getByRole('button', { name: 'Get My Quote' }).click()
+
+  await expect(page.getByRole('alert')).toContainText(/could not save your request/i)
+  await expect(page.getByText('Nothing has been sent yet')).toBeVisible()
+  await expect(page.getByText(/1 saved quote on this device/)).toBeVisible()
+  await expect(page.getByRole('link', { name: /send via whatsapp/i })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Try again' }).click()
+
+  await expect(page.getByRole('heading', { name: 'Quote request received' })).toBeVisible()
+  await expect(page.getByText('SH-RETRY-5678')).toBeVisible()
+  expect(attempts).toBe(2)
+  expect(requestIds[0]).toBe(requestIds[1])
+})
+
+test('offline submission keeps the draft and never calls the API', async ({ page, context }) => {
+  let apiCalls = 0
+  await page.route('**/api/leads', async route => {
+    apiCalls += 1
+    await route.abort()
+  })
+
   await page.goto('/')
   await page.getByRole('button', { name: /calculate your instant quote/i }).click()
   await expect(page.getByRole('slider', { name: 'Floor Area' })).toBeVisible()
@@ -61,6 +130,7 @@ test('offline submission keeps the draft instead of pretending to send it', asyn
 
   await expect(page.getByText(/You are offline/)).toBeVisible()
   await expect(page.getByText('Nothing has been sent yet')).toBeVisible()
+  expect(apiCalls).toBe(0)
 
   await context.setOffline(false)
   await page.reload()

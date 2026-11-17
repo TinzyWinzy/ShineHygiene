@@ -11,13 +11,15 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:migrate": "node --env-file=.env.local scripts/migrate.mjs"
   },
   "engines": {
     "node": ">=20.19.0",
     "npm": ">=10"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.2.1",
     "motion": "^12.42.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"

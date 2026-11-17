@@ -143,7 +143,7 @@ function isFrequency(value: unknown): value is Frequency {
   return typeof value === 'string' && (FREQUENCIES as readonly string[]).includes(value)
 }
 
-function reviveQuoteState(vertical: Vertical, params: unknown): QuoteState | null {
+export function reviveQuoteState(vertical: Vertical, params: unknown): QuoteState | null {
   if (!isRecord(params)) return null
 
   switch (vertical) {
@@ -221,7 +221,8 @@ export function reviveLeadDraft(raw: unknown): LeadDraft | null {
         ? raw.queuedAt
         : new Date().toISOString()
 
-  const status: DraftStatus = raw.status === 'handed_off' ? 'handed_off' : 'pending'
+  const status: DraftStatus =
+    raw.status === 'handed_off' ? 'handed_off' : raw.status === 'submitted' ? 'submitted' : 'pending'
 
   const lead = createLead(
     state,
@@ -241,6 +242,8 @@ export function reviveLeadDraft(raw: unknown): LeadDraft | null {
     data: lead,
     savedAt,
     status,
+    serverReference: typeof raw.serverReference === 'string' ? raw.serverReference : undefined,
+    submittedAt: typeof raw.submittedAt === 'string' ? raw.submittedAt : undefined,
     handedOffAt: typeof raw.handedOffAt === 'string' ? raw.handedOffAt : undefined,
   }
 }
