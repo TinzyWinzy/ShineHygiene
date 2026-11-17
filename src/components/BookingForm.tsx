@@ -1,9 +1,15 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { motion } from 'motion/react'
 
 interface Props {
   onSubmit: (data: { name: string; phone: string; date: string; time: string }) => void
   disabled?: boolean
+}
+
+function todayIso(): string {
+  const now = new Date()
+  const offset = now.getTimezoneOffset()
+  return new Date(now.getTime() - offset * 60_000).toISOString().slice(0, 10)
 }
 
 export default function BookingForm({ onSubmit, disabled }: Props) {
@@ -12,12 +18,13 @@ export default function BookingForm({ onSubmit, disabled }: Props) {
   const [date, setDate] = useState('')
   const [time, setTime] = useState('')
 
-  const submit = () => {
-    if (!name.trim() || !phone.trim()) return
+  const valid = name.trim().length > 0 && phone.trim().length > 0
+
+  const submit = (event?: FormEvent) => {
+    event?.preventDefault()
+    if (!valid) return
     onSubmit({ name: name.trim(), phone: phone.trim(), date, time })
   }
-
-  const valid = name.trim().length > 0 && phone.trim().length > 0
 
   return (
     <motion.div
@@ -26,26 +33,32 @@ export default function BookingForm({ onSubmit, disabled }: Props) {
       transition={{ duration: 0.4, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
       className="bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200/60 shadow-lg shadow-gray-200/50 overflow-hidden"
     >
-      <div className="bg-gradient-to-r from-brand-dark to-brand px-5 py-3.5">
+      <div className="bg-gradient-to-r from-brand-dark to-brand-ink px-5 py-3.5">
         <h3 className="text-white font-semibold flex items-center gap-2">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
           Your Details
         </h3>
-        <p className="text-white/60 text-xs mt-0.5">We'll prepare your quote and contact you.</p>
+        <p className="text-white text-xs mt-0.5">We&rsquo;ll prepare your quote and contact you.</p>
       </div>
 
-      <div className="p-5 space-y-4">
+      <form className="p-5 space-y-4" onSubmit={submit} noValidate>
         <motion.div
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
         >
-          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+          <label htmlFor="lead-name" className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
           <input
+            id="lead-name"
+            name="name"
             type="text"
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="e.g. Tinashe Mukova"
+            autoComplete="name"
+            maxLength={80}
+            required
+            aria-required="true"
             className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand transition-all bg-white/50"
           />
         </motion.div>
@@ -55,12 +68,19 @@ export default function BookingForm({ onSubmit, disabled }: Props) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+          <label htmlFor="lead-phone" className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
           <input
+            id="lead-phone"
+            name="phone"
             type="tel"
+            inputMode="tel"
             value={phone}
             onChange={e => setPhone(e.target.value)}
             placeholder="e.g. 0771 234 567"
+            autoComplete="tel"
+            maxLength={20}
+            required
+            aria-required="true"
             className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand transition-all bg-white/50"
           />
         </motion.div>
@@ -72,17 +92,22 @@ export default function BookingForm({ onSubmit, disabled }: Props) {
           className="grid grid-cols-2 gap-3"
         >
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
+            <label htmlFor="lead-date" className="block text-sm font-medium text-gray-700 mb-1">Preferred Date</label>
             <input
+              id="lead-date"
+              name="preferredDate"
               type="date"
+              min={todayIso()}
               value={date}
               onChange={e => setDate(e.target.value)}
               className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand transition-all bg-white/50"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Time</label>
+            <label htmlFor="lead-time" className="block text-sm font-medium text-gray-700 mb-1">Preferred Time</label>
             <input
+              id="lead-time"
+              name="preferredTime"
               type="time"
               value={time}
               onChange={e => setTime(e.target.value)}
@@ -97,11 +122,11 @@ export default function BookingForm({ onSubmit, disabled }: Props) {
           transition={{ duration: 0.3, delay: 0.3 }}
         >
           <motion.button
-            onClick={submit}
+            type="submit"
             disabled={!valid || disabled}
             whileHover={valid ? { scale: 1.01 } : {}}
             whileTap={valid ? { scale: 0.98 } : {}}
-            className="w-full py-3 rounded-xl font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-gradient-to-r from-brand to-brand-dark text-white shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 active:shadow-md"
+            className="w-full py-3 rounded-xl font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed bg-gradient-to-r from-brand-ink to-brand-dark text-white shadow-lg shadow-brand/20 hover:shadow-xl hover:shadow-brand/30 active:shadow-md"
           >
             {disabled ? (
               <span className="flex items-center justify-center gap-2">
@@ -110,8 +135,11 @@ export default function BookingForm({ onSubmit, disabled }: Props) {
               </span>
             ) : 'Get My Quote'}
           </motion.button>
+          <p className="text-[11px] text-gray-500 text-center mt-2">
+            Your name and phone number are saved on this device and only shared when you send the quote.
+          </p>
         </motion.div>
-      </div>
+      </form>
     </motion.div>
   )
 }

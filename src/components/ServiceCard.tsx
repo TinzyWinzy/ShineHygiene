@@ -50,24 +50,24 @@ export default function ServiceCard({ vertical, icon, title, description, highli
         {title}
       </h3>
 
-      <p className="text-sm text-gray-400 mt-1 leading-relaxed flex-1">
+      <p className="text-sm text-gray-500 mt-1 leading-relaxed flex-1">
         {description}
       </p>
 
       <ul className="mt-3 space-y-1 w-full">
         {highlights.map(h => (
           <li key={h} className="flex items-center gap-1.5 text-xs text-gray-500">
-            <svg className="w-3 h-3 text-brand shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
+            <svg className="w-3 h-3 text-brand-ink shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
             {h}
           </li>
         ))}
       </ul>
 
       <div className="mt-4 pt-3 border-t border-gray-100 w-full flex items-center justify-between">
-        <span className="text-xs text-gray-400">
+        <span className="text-xs text-gray-500">
           From <span className="font-semibold text-gray-700">${priceFrom}</span>
         </span>
-        <span className="text-xs font-medium text-brand group-hover:gap-1.5 transition-all inline-flex items-center gap-1">
+        <span className="text-xs font-medium text-brand-ink group-hover:gap-1.5 transition-all inline-flex items-center gap-1">
           Get Quote
           <svg className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
         </span>

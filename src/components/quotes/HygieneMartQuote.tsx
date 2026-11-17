@@ -42,7 +42,7 @@ export default function HygieneMartQuote({ params, onChange }: Props) {
     >
       <div>
         <h2 className="text-lg font-semibold text-gray-800">HygieneMart</h2>
-        <p className="text-sm text-gray-400 mt-0.5">Wholesale cleaning supplies and equipment.</p>
+        <p className="text-sm text-gray-500 mt-0.5">Wholesale cleaning supplies and equipment.</p>
       </div>
 
       <motion.div
@@ -60,7 +60,7 @@ export default function HygieneMartQuote({ params, onChange }: Props) {
 
       {categories.map((cat, ci) => (
         <div key={cat}>
-          <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2.5">{cat}</h3>
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-2.5">{cat}</h3>
           <div className="space-y-2">
             {HYGIENE_MART_CATALOG.filter(i => i.category === cat).map((item, ii) => {
               const qty = cartMap.get(item.id) ?? 0
@@ -75,7 +75,7 @@ export default function HygieneMartQuote({ params, onChange }: Props) {
                 >
                   <div className="flex-1 min-w-0">
                     <span className="block text-sm font-medium text-gray-800 truncate">{item.name}</span>
-                    <span className="text-xs text-gray-400">${item.unitPrice.toFixed(2)} / {item.unit}</span>
+                    <span className="text-xs text-gray-500">${item.unitPrice.toFixed(2)} / {item.unit}</span>
                     {qty > 0 && (
                       <span className="text-xs font-medium text-brand-dark tabular-nums block mt-0.5">
                         = ${(item.unitPrice * qty).toFixed(2)}
@@ -84,9 +84,11 @@ export default function HygieneMartQuote({ params, onChange }: Props) {
                   </div>
                   <div className="flex items-center gap-2 ml-3">
                     <motion.button
+                      type="button"
                       whileTap={{ scale: 0.9 }}
                       onClick={() => updateItem(item.id, Math.max(0, qty - 1))}
-                      className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors text-lg leading-none"
+                      aria-label={`Decrease ${item.name} quantity`}
+                      className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors text-lg leading-none"
                     >
                       &minus;
                     </motion.button>
@@ -99,9 +101,11 @@ export default function HygieneMartQuote({ params, onChange }: Props) {
                       {qty}
                     </motion.span>
                     <motion.button
+                      type="button"
                       whileTap={{ scale: 0.9 }}
                       onClick={() => updateItem(item.id, qty + 1)}
-                      className="w-8 h-8 rounded-full border border-brand/30 flex items-center justify-center text-brand hover:bg-brand-light transition-colors text-lg leading-none"
+                      aria-label={`Increase ${item.name} quantity`}
+                      className="w-12 h-12 rounded-full border border-brand/30 flex items-center justify-center text-brand-ink hover:bg-brand-light transition-colors text-lg leading-none"
                     >
                       +
                     </motion.button>

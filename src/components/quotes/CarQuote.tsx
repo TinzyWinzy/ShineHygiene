@@ -21,14 +21,16 @@ export default function CarQuote({ params, onChange }: Props) {
     >
       <div>
         <h2 className="text-lg font-semibold text-gray-800">Vehicle Detailing</h2>
-        <p className="text-sm text-gray-400 mt-0.5">Complete interior & exterior deep cleaning service.</p>
+        <p className="text-sm text-gray-500 mt-0.5">Complete interior & exterior deep cleaning service.</p>
       </div>
 
       <div className="grid gap-3">
         {OPTIONS.map((o, i) => (
           <motion.button
             key={o.value}
+            type="button"
             onClick={() => onChange({ carSize: o.value })}
+            aria-pressed={params.carSize === o.value}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: i * 0.1 }}
@@ -44,7 +46,7 @@ export default function CarQuote({ params, onChange }: Props) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <span className="font-semibold text-gray-800">{o.label}</span>
-                <span className={`text-lg font-bold tabular-nums ${params.carSize === o.value ? 'text-brand' : 'text-gray-400'}`}>
+                <span className={`text-lg font-bold tabular-nums ${params.carSize === o.value ? 'text-brand-ink' : 'text-gray-500'}`}>
                   ${o.price}
                 </span>
               </div>

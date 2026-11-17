@@ -19,21 +19,14 @@ export function printQuoteAsPdf(data: LeadData): void {
 function formatParams(data: LeadData): string[] {
   switch (data.vertical) {
     case 'commercial':
-    case 'office': {
-      const p = data.params as { floorArea: number; frequency: string }
-      return [`Floor Area: ${p.floorArea} sqm`, `Frequency: ${p.frequency}`]
-    }
-    case 'residential': {
-      const p = data.params as { rooms: number; windowDeepClean: boolean }
-      return [`Rooms: ${p.rooms}`, `Window Deep Clean: ${p.windowDeepClean ? 'Yes' : 'No'}`]
-    }
-    case 'car': {
-      const p = data.params as { carSize: string }
-      return [`Vehicle: ${p.carSize === 'suv_truck' ? 'SUV / 4x4 Truck' : 'Sedan'}`]
-    }
+    case 'office':
+      return [`Floor Area: ${data.params.floorArea} sqm`, `Frequency: ${data.params.frequency}`]
+    case 'residential':
+      return [`Rooms: ${data.params.rooms}`, `Window Deep Clean: ${data.params.windowDeepClean ? 'Yes' : 'No'}`]
+    case 'car':
+      return [`Vehicle: ${data.params.carSize === 'suv_truck' ? 'SUV / 4x4 Truck' : 'Sedan'}`]
     case 'hygienemart': {
-      const p = data.params as { items: { itemId: string; quantity: number }[] }
-      const lines = p.items.map(i => {
+      const lines = data.params.items.map(i => {
         const cat = HYGIENE_MART_CATALOG.find(c => c.id === i.itemId)
         const name = cat ? cat.name : i.itemId
         return `${name} × ${i.quantity}`

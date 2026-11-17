@@ -4,7 +4,7 @@ export default function AnnouncementBar() {
   const online = useOnlineStatus()
 
   return (
-    <div className="bg-gradient-to-r from-brand-dark via-brand to-brand-dark text-white text-[11px] sm:text-xs text-center py-1.5 sm:py-2 px-4 font-medium tracking-wide relative overflow-hidden">
+    <div className="bg-gradient-to-r from-brand-dark via-brand-ink to-brand-dark text-white text-[11px] sm:text-xs text-center py-1.5 sm:py-2 px-4 font-medium tracking-wide relative overflow-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent)] animate-shimmer" />
       <div className="relative flex items-center justify-center gap-2 flex-wrap">
         <span className="hidden sm:inline">🛡️</span>

@@ -69,7 +69,9 @@ export default function VerticalNav({ active, onChange }: Props) {
           return (
             <motion.button
               key={tab.key}
+              type="button"
               onClick={() => onChange(tab.key)}
+              aria-pressed={isActive}
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.3 + i * 0.05 }}
@@ -102,7 +104,7 @@ export default function VerticalNav({ active, onChange }: Props) {
                 <span className={`text-sm font-semibold ${isActive ? 'text-brand-dark' : 'text-gray-600'}`}>
                   {tab.label}
                 </span>
-                <span className={`text-[10px] ${isActive ? 'text-brand/70' : 'text-gray-400'}`}>
+                <span className={`text-[10px] ${isActive ? 'text-brand-dark' : 'text-gray-500'}`}>
                   {tab.tagline} · From {tab.price}
                 </span>
               </span>

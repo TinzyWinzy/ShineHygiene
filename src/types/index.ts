@@ -52,25 +52,54 @@ export interface QuoteResult {
   breakdown: BreakdownLine[]
 }
 
-export type QuoteParams = CommercialQuoteParams | OfficeQuoteParams | ResidentialQuoteParams | CarQuoteParams | HygieneMartQuoteParams
+export type QuoteParams =
+  | CommercialQuoteParams
+  | OfficeQuoteParams
+  | ResidentialQuoteParams
+  | CarQuoteParams
+  | HygieneMartQuoteParams
 
-export interface LeadData {
+/**
+ * The single source of truth for the quote screen.
+ * Vertical and params are locked together so a component can never receive
+ * the previous vertical's params (the former white-screen bug).
+ */
+export type QuoteState =
+  | { vertical: 'commercial'; params: CommercialQuoteParams }
+  | { vertical: 'residential'; params: ResidentialQuoteParams }
+  | { vertical: 'office'; params: OfficeQuoteParams }
+  | { vertical: 'car'; params: CarQuoteParams }
+  | { vertical: 'hygienemart'; params: HygieneMartQuoteParams }
+
+export interface LeadBase {
   id: string
   name: string
   phone: string
-  vertical: Vertical
-  params: QuoteParams
   quote: QuoteResult
   preferredDate?: string
   preferredTime?: string
   createdAt: string
 }
 
-export interface QueuedLead {
+export type LeadData =
+  | (LeadBase & { vertical: 'commercial'; params: CommercialQuoteParams })
+  | (LeadBase & { vertical: 'residential'; params: ResidentialQuoteParams })
+  | (LeadBase & { vertical: 'office'; params: OfficeQuoteParams })
+  | (LeadBase & { vertical: 'car'; params: CarQuoteParams })
+  | (LeadBase & { vertical: 'hygienemart'; params: HygieneMartQuoteParams })
+
+/**
+ * A lead saved on this device. Nothing is sent until the API confirms it,
+ * or until the customer intentionally hands it to WhatsApp.
+ */
+export type DraftStatus = 'pending' | 'handed_off'
+
+export interface LeadDraft {
   id: string
   data: LeadData
-  queuedAt: string
-  retryCount: number
+  savedAt: string
+  status: DraftStatus
+  handedOffAt?: string
 }
 
 export const HYGIENE_MART_CATALOG: HygieneMartItem[] = [
