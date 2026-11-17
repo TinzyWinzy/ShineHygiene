@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto'
 import { neon } from '@neondatabase/serverless'
-import { MAX_LEAD_BODY_BYTES, parseLeadSubmission } from '../src/domain/leadSubmission'
+import { MAX_LEAD_BODY_BYTES, parseLeadSubmission } from './_lib/lead.js'
 
 interface ApiRequest {
   method?: string

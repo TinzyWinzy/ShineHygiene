@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { parseLeadSubmission } from './leadSubmission'
+import { parseLeadSubmission } from '../../api/_lib/lead'
+import { calculateQuote, defaultQuoteState } from './quoteState'
 
 function tomorrow(): string {
   return new Date(Date.now() + 86_400_000).toISOString().slice(0, 10)
@@ -83,4 +84,16 @@ describe('parseLeadSubmission', () => {
     expect(result.lead.preferredDate).toBeNull()
     expect(result.lead.preferredTime).toBeNull()
   })
+
+  it.each(['commercial', 'residential', 'office', 'car', 'hygienemart'] as const)(
+    'server and client totals agree for %s',
+    vertical => {
+      const state = defaultQuoteState(vertical)
+      const result = parseLeadSubmission({ ...base(), vertical, params: state.params })
+
+      expect(result.ok).toBe(true)
+      if (!result.ok) return
+      expect(result.lead.quote).toEqual(calculateQuote(state))
+    },
+  )
 })
