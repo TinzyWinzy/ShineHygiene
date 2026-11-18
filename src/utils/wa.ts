@@ -1,7 +1,8 @@
 import type { LeadData } from '../types'
 import { HYGIENE_MART_CATALOG } from '../types'
+import { SHINE_CONTACT } from '../config/contact'
 
-const SHINE_PHONE = '263771962330'
+const SHINE_PHONE = SHINE_CONTACT.whatsapp.e164.replace(/[^\d]/g, '')
 
 function formatLeadParams(data: LeadData): string {
   switch (data.vertical) {

@@ -2,6 +2,16 @@
 
 Instant multi-vertical cleaning quote engine for commercial, residential, office, car detailing, and HygieneMart wholesale orders in Harare, Zimbabwe.
 
+## Product and architecture direction
+
+This SPA is the validated quote/lead bridge, not the target product. The full-stack rebuild is defined in:
+
+- [`docs/PRD.md`](docs/PRD.md) — users, journeys, scope, requirements, permissions, metrics.
+- [`docs/SAD.md`](docs/SAD.md) — Next.js architecture, data model, auth/RBAC, migration and cutover.
+- [`docs/UX-DESIGN-BRIEF.md`](docs/UX-DESIGN-BRIEF.md) — brand direction, UX laws, flows and visual system.
+
+Do not add new operational features to this SPA. New product work lands in the full-stack app after the cutover defined in the SAD.
+
 ## Stack
 
 - **Vite 8** + **React 19** + **TypeScript 6** (strict)
@@ -61,6 +71,21 @@ npm install
 npm run dev
 npm run db:migrate   # after vercel env pull
 ```
+
+## Staff access (back office)
+
+Neon Auth must be provisioned for the project (`NEON_AUTH_BASE_URL` must be a real URL, not `provisioning`). Then:
+
+1. Create the first user through Neon Auth (email/password).
+2. Insert a matching row in `staff_members` with that user's `auth_user_id` (uuid), email, name, and role (`owner`, `admin`, or `ops`).
+3. Or run `node --env-file=.env.local scripts/bootstrap-staff.mjs <email> <password> "<name>" [role]` to create the user and staff row in one step.
+4. Sign in via the "Back office" button using the same email/password.
+
+Until a `staff_members` row exists for the authenticated user, login returns `staff_access_required`.
+
+## Health check
+
+`GET /api/health` reports database connectivity. Returns `200 { status: "ok", db: "ok" }` or `503` when degraded.
 
 ## Verification
 

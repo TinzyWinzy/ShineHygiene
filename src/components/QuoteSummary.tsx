@@ -34,7 +34,7 @@ export default function QuoteSummary({ quote }: Props) {
           >
             <span className={b.amount < 0 ? 'text-red-600' : 'text-gray-600'}>{b.label}</span>
             <span className={`font-medium tabular-nums ${b.amount < 0 ? 'text-red-600' : 'text-gray-800'}`}>
-              {b.amount < 0 ? `-$${Math.abs(b.amount).toFixed(2)}` : `$${b.amount.toFixed(2)}`}
+              {b.amount < 0 ? `US$${Math.abs(b.amount).toFixed(2)}` : `US$${b.amount.toFixed(2)}`}
             </span>
           </motion.div>
         ))}
@@ -42,14 +42,14 @@ export default function QuoteSummary({ quote }: Props) {
         {quote.discount > 0 && (
           <div className="flex justify-between text-sm text-emerald-700 font-medium pt-2 border-t border-gray-100">
             <span>You save</span>
-            <span>-${quote.discount.toFixed(2)}</span>
+            <span>-US${quote.discount.toFixed(2)}</span>
           </div>
         )}
 
         <div className="flex justify-between items-baseline pt-3 border-t-2 border-gray-200">
           <span className="text-sm font-medium text-gray-600">Estimated Total</span>
           <span className="text-2xl font-bold text-brand-dark tabular-nums">
-            $<AnimatedCounter value={quote.total} duration={500} /> USD
+            <AnimatedCounter value={quote.total} duration={500} /> US$
           </span>
         </div>
 

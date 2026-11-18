@@ -17,6 +17,7 @@ import QuoteSummary from './components/QuoteSummary'
 import BookingForm from './components/BookingForm'
 import OfflineBanner from './components/OfflineBanner'
 import Footer from './components/Footer'
+import AdminDashboard from './components/AdminDashboard'
 import CommercialQuote from './components/quotes/CommercialQuote'
 import OfficeQuote from './components/quotes/OfficeQuote'
 import ResidentialQuote from './components/quotes/ResidentialQuote'
@@ -47,6 +48,7 @@ interface SubmissionState {
 
 export default function App() {
   const [showLanding, setShowLanding] = useState(true)
+  const [adminOpen, setAdminOpen] = useState(false)
   const [submitted, setSubmitted] = useState<SubmissionState | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
@@ -154,7 +156,18 @@ export default function App() {
 
   return (
     <AnimatePresence mode="wait">
-      {showLanding ? (
+      {adminOpen ? (
+        <motion.div
+          key="admin"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+          className="min-h-dvh bg-gradient-to-b from-gray-50 via-white to-gray-50 flex flex-col"
+        >
+          <AdminDashboard onExit={() => setAdminOpen(false)} />
+        </motion.div>
+      ) : showLanding ? (
         <motion.div
           key="landing"
           initial={{ opacity: 0 }}
@@ -165,7 +178,7 @@ export default function App() {
         >
           <AnnouncementBar />
           <OfflineBanner drafts={drafts} />
-          <Navbar onStart={() => handleStart()} />
+          <Navbar onStart={() => handleStart()} onOpenAdmin={() => setAdminOpen(true)} />
           <LandingPage onStart={handleStart} />
           <Footer />
         </motion.div>
@@ -185,7 +198,7 @@ export default function App() {
 
           <AnnouncementBar />
           <OfflineBanner drafts={drafts} />
-          <Navbar onStart={goHome} />
+          <Navbar onStart={goHome} onOpenAdmin={() => setAdminOpen(true)} />
 
           <VerticalNav active={vertical} onChange={handleVerticalChange} />
 

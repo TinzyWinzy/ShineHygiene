@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import { randomBytes } from 'node:crypto'
 import { neon } from '@neondatabase/serverless'
 import { MAX_LEAD_BODY_BYTES, parseLeadSubmission } from './_lib/lead.js'
@@ -15,6 +16,7 @@ interface ApiResponse {
 }
 
 interface StoredLead {
+  id: string
   reference: string
   created_at: string
   total_cents: number
@@ -73,7 +75,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   const parsed = parseLeadSubmission(parseBody(req))
-  if (!parsed.ok) {
+  if (parsed.ok === false) {
     res.status(400).json({ error: 'invalid_lead', fields: parsed.errors })
     return
   }
@@ -121,7 +123,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
             ${lead.totalCents}
           )
           on conflict (client_request_id) do nothing
-          returning reference, created_at, total_cents
+          returning id, reference, created_at, total_cents
         `) as StoredLead[]
         break
       } catch (error) {
@@ -132,6 +134,35 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     }
 
     if (rows.length > 0) {
+      await sql`
+        insert into quotes (
+          reference,
+          lead_id,
+          customer_name,
+          customer_phone,
+          vertical,
+          params,
+          quote,
+          total_cents,
+          status,
+          currency,
+          source
+        )
+        values (
+          ${rows[0].reference},
+          (select id from leads where client_request_id = ${lead.clientRequestId}),
+          ${lead.name},
+          ${lead.phone},
+          ${lead.state.vertical},
+          ${paramsJson}::jsonb,
+          ${quoteJson}::jsonb,
+          ${lead.totalCents},
+          'new',
+          'USD',
+          'web'
+        )
+      `
+
       res.status(201).json({
         reference: rows[0].reference,
         createdAt: rows[0].created_at,

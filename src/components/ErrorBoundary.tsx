@@ -46,7 +46,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             Reload the page
           </button>
           <a
-            href="https://wa.me/263771962330"
+            href="https://wa.me/263774449064"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-3 inline-block text-sm text-brand-ink hover:text-brand-dark underline underline-offset-2"

@@ -19,7 +19,7 @@ test('every vertical renders without a crash and shows a total', async ({ page }
   await expect(page.getByRole('heading', { name: 'Configure Your Quote' })).toBeVisible()
 
   for (const { tab, heading } of VERTICAL_HEADINGS) {
-    await page.getByRole('button', { name: tab }).click()
+    await page.locator('nav').getByRole('button', { name: tab }).click()
     await expect(page.getByRole('heading', { name: heading })).toBeVisible()
     await expect(page.getByText('Estimated Total')).toBeVisible()
   }
@@ -61,7 +61,7 @@ test('submission is saved by the office API and WhatsApp is the handoff', async 
   expect(requestBody).not.toHaveProperty('quote')
 
   const whatsapp = page.getByRole('link', { name: /send via whatsapp/i })
-  await expect(whatsapp).toHaveAttribute('href', /^https:\/\/wa\.me\/263771962330\?text=/)
+  await expect(whatsapp).toHaveAttribute('href', /^https:\/\/wa\.me\/263774449064\?text=/)
   await expect(whatsapp).toHaveAttribute('href', /Rudo%20Test/)
 
   await page.reload()

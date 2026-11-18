@@ -19,7 +19,9 @@
     "npm": ">=10"
   },
   "dependencies": {
+    "@neon/neon-js": "^0.10.2",
     "@neondatabase/serverless": "^1.2.1",
+    "jose": "^6.2.17",
     "motion": "^12.42.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
