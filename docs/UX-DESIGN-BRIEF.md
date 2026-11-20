@@ -63,6 +63,10 @@ Do not invent claims such as “Harare’s #1” or “100% satisfaction” unle
 | Capable | Specific inclusions, status timestamps, named assignee | “We’ll get back to you” with no window |
 | Warm | Human photography, plain language, Sunday-rest story | Excessive formality or cold legal tone |
 
+### 2.4 Approved visual reference
+
+The owner approved `theme.jpg` as the design direction for structure and component layout. Keep the three band rhythm, the dark navy hero over photography with the headline and primary action above the fold, the light alternating text and image rows, and the dark footer card area. Do not reuse its photographs or its copy. Its phone number and placeholder text are not approved content. New cleaning photography must be generated for the image slots, and image generation tooling is being connected. Section 4 remains the colour and accessibility source of truth, including the rule against gradients used as decoration.
+
 ## 3. UX laws applied
 
 | Law / principle | Concrete design decision |

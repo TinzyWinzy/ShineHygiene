@@ -36,3 +36,14 @@ blob-report
 .vercel
 .env*
 !.env.example
+
+# QA scratch (browser screenshots, throwaway driver scripts)
+.qa-*
+
+# Raw photo sources: originals are cropped/compressed into public/photos
+*.jfif
+*_n.jpg
+
+# Generated client documents
+Quotation-*.pdf
+partner-system-master-prompt-*.pdf

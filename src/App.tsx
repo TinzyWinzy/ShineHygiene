@@ -163,7 +163,7 @@ export default function App() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-          className="min-h-dvh bg-gradient-to-b from-gray-50 via-white to-gray-50 flex flex-col"
+          className="min-h-dvh bg-surface-soft flex flex-col"
         >
           <AdminDashboard onExit={() => setAdminOpen(false)} />
         </motion.div>
@@ -174,11 +174,14 @@ export default function App() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-          className="min-h-dvh bg-gradient-to-b from-gray-50 via-white to-gray-50 flex flex-col"
+          className="min-h-dvh bg-surface flex flex-col"
         >
-          <AnnouncementBar />
-          <OfflineBanner drafts={drafts} />
-          <Navbar onStart={() => handleStart()} onOpenAdmin={() => setAdminOpen(true)} />
+          {/* The home page opens on a navy hero band that runs up to the sticky header */}
+          <div className="bg-brand-dark">
+            <AnnouncementBar />
+            <OfflineBanner drafts={drafts} />
+            <Navbar onStart={() => handleStart()} onOpenAdmin={() => setAdminOpen(true)} variant="dark" />
+          </div>
           <LandingPage onStart={handleStart} />
           <Footer />
         </motion.div>
@@ -189,16 +192,12 @@ export default function App() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-          className="min-h-dvh bg-gradient-to-b from-gray-50 via-white to-gray-50 flex flex-col relative"
+          className="min-h-dvh bg-surface-soft flex flex-col relative"
         >
-          <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-            <div className="absolute top-1/4 -left-32 w-96 h-96 bg-brand/5 rounded-full blur-3xl" />
-            <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-brand-dark/5 rounded-full blur-3xl" />
-          </div>
 
           <AnnouncementBar />
           <OfflineBanner drafts={drafts} />
-          <Navbar onStart={goHome} onOpenAdmin={() => setAdminOpen(true)} />
+          <Navbar onStart={goHome} onOpenAdmin={() => setAdminOpen(true)} onNavigateHome={goHome} />
 
           <VerticalNav active={vertical} onChange={handleVerticalChange} />
 

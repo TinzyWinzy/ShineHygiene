@@ -4,13 +4,13 @@ Instant multi-vertical cleaning quote engine for commercial, residential, office
 
 ## Product and architecture direction
 
-This SPA is the validated quote/lead bridge, not the target product. The full-stack rebuild is defined in:
+This Vite SPA and its Vercel functions are the supported Shine Hygiene product. Promotion from bridge status was confirmed by the owner and is recorded in SAD ADR-006. Gaps are filled in place, there is no Next.js rebuild. The governing documents are:
 
 - [`docs/PRD.md`](docs/PRD.md) — users, journeys, scope, requirements, permissions, metrics.
-- [`docs/SAD.md`](docs/SAD.md) — Next.js architecture, data model, auth/RBAC, migration and cutover.
-- [`docs/UX-DESIGN-BRIEF.md`](docs/UX-DESIGN-BRIEF.md) — brand direction, UX laws, flows and visual system.
+- [`docs/SAD.md`](docs/SAD.md) — promoted architecture, data model, auth/RBAC, hardening and open decisions.
+- [`docs/UX-DESIGN-BRIEF.md`](docs/UX-DESIGN-BRIEF.md) — brand direction, approved visual reference, flows and visual system.
 
-Do not add new operational features to this SPA. New product work lands in the full-stack app after the cutover defined in the SAD.
+Keep new work inside this codebase and its function routes. Do not plan delivery around a framework migration.
 
 ## Stack
 

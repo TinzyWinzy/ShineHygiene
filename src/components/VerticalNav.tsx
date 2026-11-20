@@ -61,7 +61,7 @@ export default function VerticalNav({ active, onChange }: Props) {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.3 }}
-      className="sticky top-0 z-10 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm shadow-gray-200/20"
+      className="sticky top-[env(safe-area-inset-top)] z-10 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm shadow-gray-200/20"
     >
       <div className="flex overflow-x-auto gap-2 px-3 sm:px-4 py-2.5 scrollbar-none max-w-3xl mx-auto">
         {TABS.map((tab, i) => {

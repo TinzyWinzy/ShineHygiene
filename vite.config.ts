@@ -14,7 +14,7 @@ export default defineConfig({
         name: 'Shine Hygiene Solutions — Instant Quote Engine',
         short_name: 'Shine Hygiene',
         description: 'Instant multi-vertical cleaning quotes for commercial, residential, office, car detailing, and HygieneMart wholesale orders.',
-        theme_color: '#118bce',
+        theme_color: '#072b5b',
         background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait-primary',

@@ -205,7 +205,7 @@ export default function AdminDashboard({ onExit }: Props) {
         transition={{ duration: 0.3 }}
         className="bg-white/80 backdrop-blur-xl rounded-2xl border border-gray-200/60 shadow-lg shadow-gray-200/50 p-6"
       >
-        <h2 className="text-xl font-bold text-brand-dark">Staff sign in</h2>
+        <h1 className="text-xl font-bold text-brand-dark">Staff sign in</h1>
         <p className="text-sm text-gray-500 mt-1">Back-office access for Shine Hygiene operations.</p>
 
         <form className="mt-5 space-y-4" onSubmit={handleLogin}>
@@ -261,7 +261,7 @@ export default function AdminDashboard({ onExit }: Props) {
     >
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-brand-dark">Back office</h2>
+          <h1 className="text-xl font-bold text-brand-dark">Back office</h1>
           <p className="text-sm text-gray-500 mt-1">
             Signed in as {staff.name} · {staff.role}
           </p>

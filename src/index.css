@@ -1,13 +1,36 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand: #118bce;
-  --color-brand-ink: #0e6d9c;
-  --color-brand-dark: #033f77;
-  --color-brand-light: #e0f0ff;
-  --color-brand-bg: #fafbfc;
-  --color-brand-subtext: #1f2937;
-  --color-brand-muted: #6b7280;
+  /* ── Brand palette: premium navy + bright blue ── */
+  --color-brand: #118bce;        /* brand-500 — accents, large graphics, focus */
+  --color-brand-ink: #0e6d9c;    /* brand-700 — accessible primary fill / links */
+  --color-brand-dark: #072b5b;   /* navy-900 — headings, dark surfaces, footer */
+  --color-brand-light: #e8f5fc;  /* sky-100 — section tint, selected cards */
+  --color-brand-bg: #ffffff;     /* surface */
+  --color-brand-subtext: #10233f;/* ink-900 — body text */
+  --color-brand-muted: #5b6b7f;  /* muted-600 — secondary text */
+
+  /* ── Extended navy scale ── */
+  --color-navy-950: #041b3d;
+  --color-navy-900: #072b5b;
+  --color-navy-800: #0b2f6b;
+  --color-navy-700: #0e3d7a;
+
+  /* ── Surfaces & lines ── */
+  --color-surface: #ffffff;
+  --color-surface-soft: #f7f9fc;
+  --color-line-200: #dce3ea;
+
+  /* ── Status ── */
+  --color-success-700: #067647;
+  --color-warning-700: #b45309;
+  --color-danger-700: #b42318;
+  --color-whatsapp: #25d366;
+
+  /* ── Type ── */
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Archivo", "Public Sans", ui-sans-serif, system-ui, sans-serif;
+
   --breakpoint-xs: 420px;
 }
 
@@ -19,8 +42,28 @@
   }
 
   body {
-    @apply antialiased text-brand-subtext bg-brand-bg;
-    font-feature-settings: "tnum" on, "cv05" on;
+    @apply antialiased text-brand-subtext bg-brand-bg font-sans;
+    font-feature-settings: "tnum" on;
+    overflow-x: hidden;
+    /* black-translucent status bar draws the page under it on iOS */
+    padding-top: env(safe-area-inset-top);
+  }
+
+  /* Solid navy backdrop behind the iOS status bar so scrolled content never shows through */
+  body::before {
+    content: "";
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    height: env(safe-area-inset-top);
+    background: var(--color-brand-dark);
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
   }
 
   input[type="range"] {
@@ -28,7 +71,7 @@
     appearance: none;
     height: 6px;
     border-radius: 4px;
-    background: #e5e7eb;
+    background: #e3e9f0;
     outline: none;
     transition: background 0.2s;
   }
@@ -42,12 +85,12 @@
     background: var(--color-brand-ink);
     cursor: pointer;
     border: 3px solid white;
-    box-shadow: 0 2px 8px rgba(17, 139, 206, 0.3);
+    box-shadow: 0 2px 8px rgba(7, 43, 91, 0.35);
     transition: box-shadow 0.2s, transform 0.15s;
   }
 
   input[type="range"]::-webkit-slider-thumb:hover {
-    box-shadow: 0 2px 12px rgba(17, 139, 206, 0.45);
+    box-shadow: 0 2px 12px rgba(7, 43, 91, 0.45);
     transform: scale(1.1);
   }
 
@@ -58,7 +101,7 @@
     background: var(--color-brand-ink);
     cursor: pointer;
     border: 3px solid white;
-    box-shadow: 0 2px 8px rgba(17, 139, 206, 0.3);
+    box-shadow: 0 2px 8px rgba(7, 43, 91, 0.35);
   }
 
   input[type="date"],
@@ -71,7 +114,7 @@
   }
 
   ::selection {
-    background: var(--color-brand-ink);
+    background: var(--color-brand-dark);
     color: white;
   }
 
@@ -103,20 +146,34 @@
 }
 
 @layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+
   .animate-in {
     animation: fadeIn 0.35s ease-out;
   }
 
-  .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg shadow-gray-200/30;
+  /* Single soft elevation token for the premium surface language */
+  .elevate {
+    box-shadow: 0 1px 2px rgba(7, 43, 91, 0.04), 0 12px 32px -12px rgba(7, 43, 91, 0.14);
   }
 
-  .glass-strong {
-    @apply bg-white/85 backdrop-blur-2xl border border-gray-200/60 shadow-xl shadow-gray-200/40;
+  .elevate-lg {
+    box-shadow: 0 2px 4px rgba(7, 43, 91, 0.04), 0 28px 60px -24px rgba(7, 43, 91, 0.28);
   }
 
-  .glass-frost {
-    @apply bg-white/40 backdrop-blur-md border border-white/30 shadow-md;
+  /* Fine grid / dot texture for dark navy bands */
+  .hero-grid {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }
 
@@ -125,18 +182,9 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
-}
-
-.animate-shimmer {
-  animation: shimmer 3s ease-in-out infinite;
 }
 
 .animate-float {
